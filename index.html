@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Loading…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex align-items-center justify-content-center vh-100">
+
+<div class="text-center">
+  <div class="spinner-border text-primary mb-3" role="status"></div>
+  <p>Checking sign-in status…</p>
+</div>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ================================
+   CONFIG — REPLACE THESE
+================================ */
+const SUPABASE_URL = "https://zdhzmbvxniimoqxtfiel.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_RlxQGqfd3xyDGJN5KgoRYw_LKSp_FWd";
+
+/* ================================
+   INIT
+================================ */
+const supabase = supabaseJs.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  { auth: { persistSession: true } }
+);
+
+/* ================================
+   REDIRECT LOGIC
+================================ */
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (session) {
+    // Logged in → go to protected content
+    window.location.replace("/protected.html");
+  } else {
+    // Not logged in → go to login
+    window.location.replace("/login.html");
+  }
+})();
+</script>
+
+</body>
+</html>
