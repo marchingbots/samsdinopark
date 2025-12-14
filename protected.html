@@ -1,0 +1,32 @@
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://xyzcompany.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJ...";
+  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // check session on page load
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      // not logged in
+      window.location = '/login.html';
+      return;
+    }
+
+    // logged in — you can get the user id:
+    const user = session.user;
+    // Optionally fetch profile to check is_admin flag:
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile) {
+      // optional: redirect to a "not authorized" page
+    }
+
+    // show protected content...
+    document.body.insertAdjacentHTML('beforeend', `<p>Welcome ${user.email}!</p>`);
+  })();
+</script>
