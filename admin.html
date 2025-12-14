@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin – User Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+
+<div class="container">
+  <h2 class="mb-4">Admin – User Management</h2>
+
+  <div id="status" class="alert alert-info">Checking access…</div>
+
+  <table class="table table-bordered d-none" id="usersTable">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Admin</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="usersBody"></tbody>
+  </table>
+
+  <button class="btn btn-secondary mt-3" id="logoutBtn">Log out</button>
+</div>
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* ================================
+   CONFIG — REPLACE THESE
+================================ */
+const SUPABASE_URL = "https://YOURPROJECT.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+/* ================================
+   INIT
+================================ */
+const supabase = supabaseJs.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+const statusEl = document.getElementById("status");
+const tableEl = document.getElementById("usersTable");
+const tbodyEl = document.getElementById("usersBody");
+
+/* ================================
+   AUTH + ADMIN CHECK
+================================ */
+async function initAdminPage() {
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    window.location = "/login.html";
+    return;
+  }
+
+  const userId = session.user.id;
+
+  // Check if current user is admin
+  const { data: me, error } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", userId)
+    .single();
+
+  if (error || !me || !me.is_admin) {
+    statusEl.className = "alert alert-danger";
+    statusEl.textContent = "Access denied. Admins only.";
+    return;
+  }
+
+  statusEl.className = "alert alert-success";
+  statusEl.textContent = "Admin access granted.";
+  tableEl.classList.remove("d-none");
+
+  loadUsers();
+}
+
+/* ================================
+   LOAD USERS
+================================ */
+async function loadUsers() {
+  tbodyEl.innerHTML = "";
+
+  const { data: users, error } = await supabase
+    .from("profiles")
+    .select("id, is_admin")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    alert("Error loading users: " + error.message);
+    return;
+  }
+
+  users.forEach(user => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${user.id}</td>
+      <td>${user.is_admin ? "Yes" : "No"}</td>
+      <td>
+        <button class="btn btn-sm ${user.is_admin ? "btn-warning" : "btn-primary"}">
+          ${user.is_admin ? "Remove admin" : "Make admin"}
+        </button>
+      </td>
+    `;
+
+    tr.querySelector("button").onclick = () =>
+      toggleAdmin(user.id, !user.is_admin);
+
+    tbodyEl.appendChild(tr);
+  });
+}
+
+/* ================================
+   TOGGLE ADMIN
+================================ */
+async function toggleAdmin(userId, makeAdmin) {
+  const confirmed = confirm(
+    makeAdmin
+      ? "Grant admin privileges?"
+      : "Remove admin privileges?"
+  );
+  if (!confirmed) return;
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ is_admin: makeAdmin })
+    .eq("id", userId);
+
+  if (error) {
+    alert("Error updating user: " + error.message);
+  } else {
+    loadUsers();
+  }
+}
+
+/* ================================
+   LOGOUT
+================================ */
+document.getElementById("logoutBtn").onclick = async () => {
+  await supabase.auth.signOut();
+  window.location = "/login.html";
+};
+
+initAdminPage();
+</script>
+
+</body>
+</html>
