@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Sign Up</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container" style="max-width:420px">
+    <h2>Sign up</h2>
+    <form id="signupForm">
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input id="email" class="form-control" type="email" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input id="password" class="form-control" type="password" required>
+      </div>
+      <button class="btn btn-primary" type="submit">Create account</button>
+    </form>
+    <div id="msg" class="mt-3"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://xyzcompany.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJ...";
+    const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      // sign up (email + password). Could use magic-link instead: supabase.auth.signInWithOtp({ email })
+      const { data, error } = await supabase.auth.signUp({ email, password });
+
+      const msg = document.getElementById('msg');
+      if (error) msg.innerText = "Error: " + error.message;
+      else {
+        msg.innerText = "Check your email to confirm (if required). You can now log in.";
+        // optionally redirect: window.location = '/login.html';
+      }
+    });
+  </script>
+</body>
+</html>
