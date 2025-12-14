@@ -1,0 +1,27 @@
+<!-- Similar bootstrap wrapper omitted for brevity -->
+<form id="loginForm">
+  <input id="email" class="form-control" type="email" required>
+  <input id="password" class="form-control" type="password" required>
+  <button type="submit" class="btn btn-primary">Log in</button>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://xyzcompany.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJ...";
+  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      alert('Login error: ' + error.message);
+    } else {
+      // Redirect to protected area
+      window.location = '/protected.html';
+    }
+  });
+</script>
