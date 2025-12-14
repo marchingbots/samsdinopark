@@ -34,12 +34,30 @@
       const password = document.getElementById('password').value;
 
       // sign up (email + password). Could use magic-link instead: supabase.auth.signInWithOtp({ email })
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      // const { data, error } = await supabase.auth.signUp({ email, password });
+const { data, error } = await supabase.auth.signUp({
+  email,
+  password
+});
 
-      const msg = document.getElementById('msg');
-      if (error) msg.innerText = "Error: " + error.message;
-      else {
-        msg.innerText = "Check your email to confirm (if required). You can now log in.";
+console.log("SIGNUP DATA:", data);
+console.log("SIGNUP ERROR:", error);
+
+if (error) {
+  alert("Signup failed: " + error.message);
+  return;
+}
+
+alert("Signup success. Check email if confirmation is required.");
+
+
+
+
+      
+      // const msg = document.getElementById('msg');
+      // if (error) msg.innerText = "Error: " + error.message;
+      // else {
+      //   msg.innerText = "Check your email to confirm (if required). You can now log in.";
         // optionally redirect: window.location = '/login.html';
       }
     });
