@@ -1,27 +1,77 @@
-<!-- Similar bootstrap wrapper omitted for brevity -->
-<form id="loginForm">
-  <input id="email" class="form-control" type="email" required>
-  <input id="password" class="form-control" type="password" required>
-  <button type="submit" class="btn btn-primary">Log in</button>
-</form>
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Log In</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="p-4">
+
+<div class="container" style="max-width:420px">
+  <h2>Log in</h2>
+
+  <form id="loginForm">
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input id="email" class="form-control" type="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input id="password" class="form-control" type="password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log in</button>
+  </form>
+</div>
+
+<!-- Supabase JS v2 CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-  const SUPABASE_URL = "https://zdhzmbvxniimoqxtfiel.supabase.co";
-const SUPABASE_KEY = "sb_publishable_RlxQGqfd3xyDGJN5KgoRYw_LKSp_FWd"; // OR anon eyJ key
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+/* ================================
+   CONFIG
+================================ */
+const SUPABASE_URL = "https://zdhzmbvxniimoqxtfiel.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RlxQGqfd3xyDGJN5KgoRYw_LKSp_FWd";
 
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+/* ================================
+   INIT CLIENT (IMPORTANT NAME)
+================================ */
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      alert('Login error: ' + error.message);
-    } else {
-      // Redirect to protected area
-      window.location = '/protected.html';
-    }
+/* ================================
+   LOGIN HANDLER
+================================ */
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
   });
+
+  console.log("LOGIN DATA:", data);
+  console.log("LOGIN ERROR:", error);
+
+  if (error) {
+    alert("Login failed: " + error.message);
+    return;
+  }
+
+  // Success
+  window.location.replace("/index.html");
+});
 </script>
+
+</body>
+</html>
