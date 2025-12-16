@@ -8,8 +8,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = "https://zdhzmbvxniimoqxtfiel.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkaHptYnZ4bmlpbW9xeHRmaWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1MjE4OTcsImV4cCI6MjA4MTA5Nzg5N30.HfFsoIWrAtYfNrxSTwhYtsgnAlP_6ONLepJzH_43BFI";
-  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_KEY = "sb_publishable_RlxQGqfd3xyDGJN5KgoRYw_LKSp_FWd"; // OR anon eyJ key
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
